@@ -153,6 +153,7 @@ function run_configure_for_gpu_build {
 
   # TODO(pcloudy): Remove this after TensorFlow uses its own CRSOOTOOL
   # for GPU build on Windows
+
   export USE_MSVC_WRAPPER=1
 
   echo "" | ./configure
