@@ -48,6 +48,7 @@ def main():
 
   compiler_flags = compiler_flags + ['-DEIGEN_USE_SYCL=1',
                                      '-DEIGEN_HAS_C99_MATH',
+                                     '-DEIGEN_MAX_ALIGN_BYTES=16',
                                      '-DTENSORFLOW_USE_SYCL'] + opt_flags
 
   if(compiling_cpp == 1):

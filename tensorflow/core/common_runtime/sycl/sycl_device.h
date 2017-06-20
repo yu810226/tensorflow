@@ -44,14 +44,28 @@ class GSYCLInterface {
       }
     }
 
-      if(!found_device) {
-        // Currently Intel GPU is not supported
-        LOG(WARNING) << "No OpenCL GPU found that is supported by ComputeCpp/triSYCL, "
-                     << "trying OpenCL CPU";
-      }
+    if(!found_device) {
+      // Currently Intel GPU is not supported
+      LOG(WARNING) << "No OpenCL GPU found that is supported by ComputeCpp/triSYCL, "
+                   << "trying OpenCL CPU";
+    }
 
     for (const auto& device : device_list) {
-      if (device.is_cpu()) {
+      if (device.is_accelerator()) {
+        // returns first found Accelerator
+        AddDevice(device);
+        found_device = true;
+      }
+    }
+
+    if(!found_device) {
+      // Currently Intel GPU is not supported
+      LOG(WARNING) << "No OpenCL GPU/Acceleratir found that is supported by ComputeCpp/triSYCL, "
+                   << "trying OpenCL CPU";
+    }
+
+    for (const auto& device : device_list) {
+      if(device.is_cpu()) {
         // returns first found CPU
         AddDevice(device);
         found_device = true;
@@ -59,14 +73,14 @@ class GSYCLInterface {
     }
 
     if(!found_device) {
-      LOG(WARNING) << "No OpenCL CPU found that is supported by ComputeCpp/triSYCL, "
-                   << "checking for host sycl device";
+      LOG(WARNING) << "No OpenCL CPU found that is supported by ComputeCpp/triSYCL,"
+                   << " checking for host sycl device";
     }
 
     for (const auto& device : device_list) {
       // triSYCL only supports the host device for now
       if(device.is_host()) {
-        LOG(WARNING) << "Found SYCL host device";
+        LOG(WARNING) << "Adding SYCL host device";
         AddDevice(device);
         found_device = true;
       }
