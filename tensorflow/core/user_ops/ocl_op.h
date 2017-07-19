@@ -10,7 +10,7 @@
 
 REGISTER_OP("OpenCLNativeOp")
 .Attr("I: list(type)")
-.Attr("O: list(type)")
+.Attr("O: tensor")
 .Attr("OpenCLFile: string")
 .Attr("KernelName: string")
 .Input("in: I")
@@ -44,11 +44,11 @@ public :
     void* inputs[num_inputs];
     Tensor* outputs;
     for(int i = 0; i < num_inputs; i++) {
-      inputs[i] = &(context->input(i).tensor().data());
+      inputs[i] = context->input(i).tensor().data();
     }
     /*TODO allocate outputs*/
     auto dev = context->eigen_sycl_device();
-    outputs.device(dev) = context->input(0).tensor().nativeOCL(kernel_name, file_name, inputs);
+    outputs.device(dev) = context->input(0).tensor().nativeOCL(inputs, num_inputs, kernel_name, file_name);
   }
 
  private:
