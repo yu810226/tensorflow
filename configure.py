@@ -888,7 +888,9 @@ def set_computecpp_toolkit_path(environ_cp):
 def set_trisycl_include_dir(environ_cp):
   """Set TRISYCL_INCLUDE_DIR"""
   ask_trisycl_include_dir = ('Please specify the location of the triSYCL '
-                             'include directory. [Default is %s]: '
+                             'include directory. (Use --config=sycl_trisycl '
+                             'when building with Bazel) '
+                             '[Default is %s]: '
                              ) % (_DEFAULT_TRISYCL_INCLUDE_DIR)
   while True:
     trisycl_include_dir = get_from_env_or_user_or_default(
