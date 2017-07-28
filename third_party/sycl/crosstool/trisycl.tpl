@@ -49,7 +49,7 @@ def main():
   compiler_flags = compiler_flags + ['-DEIGEN_USE_SYCL=1',
                                      '-DEIGEN_HAS_C99_MATH',
                                      '-DEIGEN_MAX_ALIGN_BYTES=16',
-                                     '-DTENSORFLOW_USE_SYCL'] + opt_flags
+                                     '-DTENSORFLOW_USE_SYCL', '-DTRISYCL_OPENCL'] + opt_flags
 
   if(compiling_cpp == 1):
     # create a blacklist of folders that will be skipped when compiling
@@ -63,11 +63,11 @@ def main():
 
     host_compiler_flags = ['-xc++', '-Wno-unused-variable',
                            '-I', TRISYCL_INCLUDE_DIR] + compiler_flags
-    x = call([CPU_CXX_COMPILER] + host_compiler_flags)
+    x = call([CPU_CXX_COMPILER] + host_compiler_flags + ['-lOpenCL'])
     return x
   else:
     # compile for C
-    return call([CPU_C_COMPILER] + compiler_flags)
+    return call([CPU_C_COMPILER] + compiler_flags + ['-lOpenCL'])
 
 if __name__ == '__main__':
   sys.exit(main())
