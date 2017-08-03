@@ -130,6 +130,14 @@ py_test(
     deps = ["//tensorflow:tensorflow_py"],
 )
 
+py_test(
+    name = "opencl_native_op_test",
+    size = "small",
+    srcs = ["opencl_native_op_test.py"],
+    srcs_version = "PY2AND3",
+    deps = ["//tensorflow:tensorflow_py"],
+)
+
 cc_binary(
     name = "attr_examples",
     srcs = ["attr_examples.cc"],

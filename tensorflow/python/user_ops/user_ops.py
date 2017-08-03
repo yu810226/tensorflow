@@ -28,3 +28,6 @@ from tensorflow.python.ops.gen_user_ops import *  # pylint: disable=wildcard-imp
 def my_fact():
   """Example of overriding the generated code for an Op."""
   return _gen_user_ops._fact()  # pylint: disable=protected-access
+
+def ocl_native_op(input_list, output_type, shape, filename, kernelname):
+  return _gen_user_ops.openclnativeop(input_list, O=output_type, Shape=shape, OpenCLFile=filename, KernelName=kernelname)

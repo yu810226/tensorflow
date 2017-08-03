@@ -1,6 +1,3 @@
-#ifndef TENSORFLOW_USER_OPS_OCL_OP_H_
-#define TENSORFLOW_USER_OPS_OCL_OP_H_
-
 #ifndef EIGEN_USE_SYCL
 #define EIGEN_USE_SYCL
 #endif
@@ -9,15 +6,17 @@
 #include "tensorflow/core/framework/op_kernel.h"
 #include "tensorflow/core/framework/shape_inference.h"
 
-REGISTER_OP("OpenCLNativeOp")
-.Attr("I: list(type)")
-.Attr("O: type")
-.Attr("Shape: shape")
-.Attr("OpenCLFile: string")
-.Attr("KernelName: string")
-.Input("in: I")
-.Output("out: O")
-.Doc(R"doc(
+namespace tensorflow {
+
+REGISTER_OP("Openclnativeop")
+  .Attr("I: list(type)")
+  .Attr("O: type")
+  .Attr("Shape: shape")
+  .Attr("OpenCLFile: string")
+  .Attr("KernelName: string")
+  .Input("in: I")
+  .Output("out: O")
+  .Doc(R"doc(
 Operation that executes any given OpenCL kernel with the given args.
 
 I: List of the input types
@@ -27,14 +26,14 @@ OpenCLFile: Name of the OpenCL file containing the kernel
 KernelName: Name of the OpenCL kernel
 )doc");
 
-namespace tensorflow {
 
+#ifdef TENSORFLOW_USE_SYCL
 typedef Eigen::SyclDevice SYCLDevice;
+#endif
 
 class OpenCLNativeOp : public OpKernel {
 public :
   explicit OpenCLNativeOp(OpKernelConstruction* context) : OpKernel(context) {
-    std::cout << "Launch !!! " << std::endl;
     OP_REQUIRES_OK(context,
                    context->GetAttr("OpenCLFile", &file_name));
     OP_REQUIRES_OK(context,
@@ -45,20 +44,23 @@ public :
   }
 
   void Compute(OpKernelContext* context) override {
+
     int num_inputs = context->num_inputs();
     int num_outputs = context->num_outputs();
-    const void* inputs[num_inputs];
+    cl::sycl::context test1;
+
+    const void* inputs[num_inputs-1];
     Tensor* output;
     OP_REQUIRES_OK(context,
                    context->allocate_output(0, out_shape, &output));
 
-    for(int i = 1; i < num_inputs; i++) {
-      inputs[i] = context->input(i).flat<int>().data();
+    for(int i = 0; i < num_inputs-1; i++) {
+      inputs[i] = context->input(i+1).flat<float>().data();
     }
     auto dev = context->eigen_sycl_device();
-    std::cout << "Computing !!! " << std::endl;
-    output->flat<float>().device(dev) = context->input(0).flat<float>().nativeOCL(inputs, num_inputs, kernel_name, file_name);
-    std::cout << "Computing END !!! " << std::endl;
+    try{
+      output->flat<float>().device(dev) = context->input(0).flat<float>().nativeOCL(inputs, num_inputs-1, kernel_name, file_name);
+    } catch(cl::sycl::non_cl_error e) { std::cout << e.what() << std::endl; }
   }
 
  private:
@@ -69,8 +71,7 @@ public :
 };
 
 #ifdef TENSORFLOW_USE_SYCL
- REGISTER_KERNEL_BUILDER(Name("OpenCLNativeOp").Device(DEVICE_SYCL), OpenCLNativeOp);
+REGISTER_KERNEL_BUILDER(Name("Openclnativeop").Device(DEVICE_SYCL), OpenCLNativeOp);
 #endif
 
 } // namespace tensorflow
-#endif // TENSORFLOW_USER_OPS_OCL_OP_H_

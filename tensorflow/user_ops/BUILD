@@ -26,6 +26,19 @@ tf_py_test(
 )
 
 tf_custom_op_library(
+    name = "opencl_native_op.so",
+    srcs = ["opencl_native_op.cc"],
+)
+
+tf_py_test(
+    name = "opencl_native_op_test",
+    size = "small",
+    srcs = ["opencl_native_op_test.py"],
+    additional_deps = ["//tensorflow:tensorflow_py"],
+    data = [":opencl_native_op.so"],
+)
+
+tf_custom_op_library(
     name = "duplicate_op.so",
     srcs = ["duplicate_op.cc"],
 )

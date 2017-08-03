@@ -782,6 +782,7 @@ cc_library(
         "//tensorflow/core/kernels:word2vec_kernels",
     ] + tf_additional_cloud_kernel_deps() + if_not_windows([
         "//tensorflow/core/kernels:fact_op",
+        "//tensorflow/core/kernels:opencl_native_op",
         "//tensorflow/core/kernels:array_not_windows",
         "//tensorflow/core/kernels:math_not_windows",
         "//tensorflow/core/kernels:quantized_ops",

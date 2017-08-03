@@ -1778,6 +1778,17 @@ tf_kernel_library(
 )
 
 tf_kernel_library(
+    name = "opencl_native_op",
+    prefix = "opencl_native_op",
+    deps = [
+        "//tensorflow/core:framework",
+        "//tensorflow/core:lib",
+        "//tensorflow/core:user_ops_op_lib",
+        "//third_party/eigen3",
+    ],
+)
+
+tf_kernel_library(
     name = "function_ops",
     prefix = "function_ops",
     deps = [
