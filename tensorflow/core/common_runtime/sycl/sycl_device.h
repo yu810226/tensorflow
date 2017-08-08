@@ -60,7 +60,7 @@ class GSYCLInterface {
 
     if(!found_device) {
       // Currently Intel GPU is not supported
-      LOG(WARNING) << "No OpenCL GPU/Acceleratir found that is supported by ComputeCpp/triSYCL, "
+      LOG(WARNING) << "No OpenCL GPU/Accelerator found that is supported by ComputeCpp/triSYCL, "
                    << "trying OpenCL CPU";
     }
 
