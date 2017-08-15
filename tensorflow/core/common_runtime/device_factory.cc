@@ -112,7 +112,6 @@ Status DeviceFactory::AddDevices(const SessionOptions& options,
       TF_RETURN_IF_ERROR(factory->CreateDevices(options, name_prefix, devices));
     }
   }
-
   return Status::OK();
 }
 

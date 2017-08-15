@@ -47,7 +47,7 @@ def main():
   opt_flags = ['-DNDEBUG', '-DBOOST_DISABLE_ASSERTS', '-O3']
 
   compiler_flags = compiler_flags + ['-DEIGEN_USE_SYCL=1',
-                                     '-DEIGEN_USE_SYCL_TRISYCL',
+                                     '-DEIGEN_SYCL_TRISYCL=1',
                                      '-DEIGEN_HAS_C99_MATH',
                                      '-DEIGEN_MAX_ALIGN_BYTES=16',
                                      '-DTENSORFLOW_USE_SYCL', '-DTRISYCL_OPENCL'] + opt_flags

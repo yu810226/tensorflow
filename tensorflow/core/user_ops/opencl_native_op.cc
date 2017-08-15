@@ -58,12 +58,7 @@ public :
       inputs[i] = context->input(i+1).flat<float>().data();
     }
     auto dev = context->eigen_sycl_device();
-    for (const auto& device_sycl : Eigen::get_sycl_supported_devices()){
-      if(!device_sycl.is_host()){
-        output->flat<float>().device(dev) = context->input(0).flat<float>().nativeOCL(inputs, num_inputs-1, kernel_name, file_name, device_sycl);
-        break;
-      }
-    }
+    output->flat<float>().device(dev) = context->input(0).flat<float>().nativeOCL(inputs, num_inputs-1, kernel_name, file_name);
   }
 
  private:

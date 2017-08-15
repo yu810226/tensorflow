@@ -28,13 +28,11 @@ class SYCLDeviceFactory : public DeviceFactory {
                        std::vector<Device *> *devices) override {
 
     auto syclInterface = GSYCLInterface::instance();
-
     size_t n = 1;
     auto iter = options.config.device_count().find("SYCL");
     if (iter != options.config.device_count().end()) {
       n = iter->second;
     }
-
     for (int i = 0; i < n; i++) {
       string name = strings::StrCat(name_prefix, "/device:SYCL:", i);
       devices->push_back(
@@ -45,7 +43,6 @@ class SYCLDeviceFactory : public DeviceFactory {
                          , syclInterface->GetSYCLContext(i))
                        );
     }
-
     return Status::OK();
   }
 };
