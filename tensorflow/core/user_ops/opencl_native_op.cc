@@ -4,6 +4,7 @@
 
 #include "tensorflow/core/framework/op.h"
 #include "tensorflow/core/framework/op_kernel.h"
+#include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/shape_inference.h"
 
 namespace tensorflow {
@@ -20,7 +21,7 @@ REGISTER_OP("Openclnativeop")
 Operation that executes any given OpenCL kernel with the given args.
 
 I: List of the input types
-O: List of the output types
+O: Output type
 Shape: The shape of the output tensor
 OpenCLFile: Name of the OpenCL file containing the kernel
 KernelName: Name of the OpenCL kernel
@@ -31,6 +32,7 @@ KernelName: Name of the OpenCL kernel
 typedef Eigen::SyclDevice SYCLDevice;
 #endif
 
+template <typename T>
 class OpenCLNativeOp : public OpKernel {
 public :
   explicit OpenCLNativeOp(OpKernelConstruction* context) : OpKernel(context) {
@@ -55,10 +57,10 @@ public :
                    context->allocate_output(0, out_shape, &output));
 
     for(int i = 0; i < num_inputs-1; i++) {
-      inputs[i] = context->input(i+1).flat<float>().data();
+      inputs[i] = context->input(i+1).flat<T>().data();
     }
     auto dev = context->eigen_sycl_device();
-    output->flat<float>().device(dev) = context->input(0).flat<float>().nativeOCL(inputs, num_inputs-1, kernel_name, file_name);
+    output->flat<T>().device(dev) = context->input(0).flat<T>().nativeOCL(inputs, num_inputs-1, kernel_name, file_name);
   }
 
  private:
@@ -69,7 +71,10 @@ public :
 };
 
 #ifdef TENSORFLOW_USE_SYCL
-REGISTER_KERNEL_BUILDER(Name("Openclnativeop").Device(DEVICE_SYCL), OpenCLNativeOp);
+#define REGISTER_SYCL_NATIVE_OP_KERNEL(T) \
+  REGISTER_KERNEL_BUILDER(Name("Openclnativeop").Device(DEVICE_SYCL).TypeConstraint<T>("O").TypeConstraint<T>("I"), OpenCLNativeOp<T>);
+
+  TF_CALL_SYCL_NUMBER_TYPES(REGISTER_SYCL_NATIVE_OP_KERNEL)
 #endif
 
 } // namespace tensorflow
