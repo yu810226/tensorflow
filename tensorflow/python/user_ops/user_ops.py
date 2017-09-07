@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import print_function
 
 from tensorflow.python.ops import gen_user_ops as _gen_user_ops
+from tensorflow.python.framework import ops
 
 # go/tf-wildcard-import
 from tensorflow.python.ops.gen_user_ops import *  # pylint: disable=wildcard-import
@@ -29,5 +30,5 @@ def my_fact():
   """Example of overriding the generated code for an Op."""
   return _gen_user_ops._fact()  # pylint: disable=protected-access
 
-def ocl_native_op(input_list, output_type, shape, filename, kernelname):
-  return _gen_user_ops.openclnativeop(input_list, O=output_type, Shape=shape, OpenCLFile=filename, KernelName=kernelname)
+def ocl_native_op(input_list, output_type, shape, file_name, kernel_name, is_binary):
+  return _gen_user_ops.openclnativeop(input_list, O=output_type, Shape=shape, OpenCLFile=file_name, KernelName=kernel_name, IsBinary=is_binary)

@@ -55,9 +55,6 @@ class GSYCLInterface {
         AddDevice(device);
         found_device = true;
       }
-    }
-
-    for (const auto& device : device_list) {
       if (device.is_cpu()) {
         // returns first found CPU
         AddDevice(device);

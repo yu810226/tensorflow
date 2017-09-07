@@ -15,6 +15,7 @@ REGISTER_OP("Openclnativeop")
   .Attr("Shape: shape")
   .Attr("OpenCLFile: string")
   .Attr("KernelName: string")
+  .Attr("IsBinary: bool")
   .Input("in: I")
   .Output("out: O")
   .Doc(R"doc(
@@ -25,6 +26,7 @@ O: Output type
 Shape: The shape of the output tensor
 OpenCLFile: Name of the OpenCL file containing the kernel
 KernelName: Name of the OpenCL kernel
+IsBinary: Specify if the source is a binary file
 )doc");
 
 
@@ -42,6 +44,7 @@ public :
                    context->GetAttr("KernelName", &kernel_name));
     OP_REQUIRES_OK(context,
                    context->GetAttr("Shape", &out_shape));
+    context->GetAttr("IsBinary", &is_binary);
     log_ = StringPiece(type_string()).starts_with("Log");
   }
 
@@ -49,7 +52,6 @@ public :
 
     int num_inputs = context->num_inputs();
     int num_outputs = context->num_outputs();
-    cl::sycl::context test1;
 
     const void* inputs[num_inputs-1];
     Tensor* output;
@@ -60,13 +62,14 @@ public :
       inputs[i] = context->input(i+1).flat<T>().data();
     }
     auto dev = context->eigen_sycl_device();
-    output->flat<T>().device(dev) = context->input(0).flat<T>().nativeOCL(inputs, num_inputs-1, kernel_name, file_name);
+    output->flat<T>().device(dev) = context->input(0).flat<T>().nativeOCL(inputs, num_inputs-1, kernel_name, file_name, is_binary);
   }
 
  private:
   string kernel_name;
   string file_name;
   TensorShape out_shape;
+  bool is_binary;
   bool log_;
 };
 
